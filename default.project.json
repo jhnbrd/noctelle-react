@@ -1,6 +1,8 @@
 {
   "name": "NOCTELLE-DEV",
-  "servePlaceIds": [119625856408570],
+  "servePlaceIds": [
+    119625856408570
+  ],
   "tree": {
     "$className": "DataModel",
     "$ignoreUnknownInstances": true,
@@ -13,6 +15,17 @@
         "$ignoreUnknownInstances": false,
         "Packages": {
           "$path": "Packages"
+        }
+      }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "$ignoreUnknownInstances": true,
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "$ignoreUnknownInstances": true,
+        "NoctelleReactPlayground": {
+          "$path": "src/client/ComponentPlayground.client.luau"
         }
       }
     }
