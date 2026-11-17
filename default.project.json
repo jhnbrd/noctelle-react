@@ -26,6 +26,9 @@
         "$ignoreUnknownInstances": true,
         "NoctelleReactPlayground": {
           "$path": "src/client/ComponentPlayground.client.luau"
+        },
+        "NoctelleAcrylicController": {
+          "$path": "src/client/NoctelleAcrylicController.client.luau"
         }
       }
     }
