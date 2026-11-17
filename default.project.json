@@ -1,0 +1,20 @@
+{
+  "name": "NOCTELLE-DEV",
+  "servePlaceIds": [119625856408570],
+  "tree": {
+    "$className": "DataModel",
+    "$ignoreUnknownInstances": true,
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "$ignoreUnknownInstances": true,
+      "NoctelleReactDev": {
+        "$className": "Folder",
+        "$path": "src/shared",
+        "$ignoreUnknownInstances": false,
+        "Packages": {
+          "$path": "Packages"
+        }
+      }
+    }
+  }
+}

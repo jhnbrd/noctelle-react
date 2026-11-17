@@ -1,0 +1,8 @@
+Packages/
+*.rbxl
+*.rbxlx
+*.rbxm
+*.rbxmx
+.vscode/
+*.log
+*.tmp
