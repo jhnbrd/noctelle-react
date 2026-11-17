@@ -20,6 +20,9 @@ local GlassPanel = require(Components.GlassPanel)
 local Card = require(Components.Card)
 local Divider = require(Components.Divider)
 
+local Stack = require(Components.Stack)
+local Row = require(Components.Row)
+
 local Tokens = require(Foundation.Tokens)
 local Theme = require(Foundation.Theme)
 local Responsive = require(Foundation.Responsive)
@@ -61,12 +64,15 @@ local function makeParagraph(value, color, order)
 end
 
 local function verticalLayout(spacing)
-	return e("UIListLayout", {
-		SortOrder = Enum.SortOrder.LayoutOrder,
-		FillDirection = Enum.FillDirection.Vertical,
-		HorizontalAlignment = Enum.HorizontalAlignment.Left,
-		Padding = UDim.new(0, spacing),
-	})
+    return Stack.Layout({
+        Spacing = spacing,
+    })
+end
+
+local function horizontalLayout(spacing)
+    return Row.Layout({
+        Spacing = spacing,
+    })
 end
 
 local function themeSwatches(selectedTheme, onSelect)
@@ -218,8 +224,50 @@ local function PlaygroundApp()
 		}),
 	}
 
+    local rowPreview = e("Frame", {
+        Name = "RowPreview",
+        LayoutOrder = 12,
+        Size = UDim2.new(1, 0, 0, 48),
+        BackgroundTransparency = 1,
+    }, {
+        Layout = horizontalLayout(Tokens.Space.SM),
+
+        Left = e("TextLabel", {
+            Name = "LeftLabel",
+            LayoutOrder = 1,
+            Size = UDim2.new(0.5, -Tokens.Space.SM, 1, 0),
+            BackgroundTransparency = 1,
+            Text = "Stack / Row",
+            Font = Tokens.Font.Medium,
+            TextSize = Tokens.Type.Body,
+            TextColor3 = palette.Text,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            TextTruncate = Enum.TextTruncate.AtEnd,
+        }),
+
+        Right = e("TextLabel", {
+            Name = "RightLabel",
+            LayoutOrder = 2,
+            Size = UDim2.new(0.5, -Tokens.Space.SM, 1, 0),
+            BackgroundTransparency = 1,
+            Text = "Phase 1D",
+            Font = Tokens.Font.Regular,
+            TextSize = Tokens.Type.Caption,
+            TextColor3 = palette.Muted,
+            TextXAlignment = Enum.TextXAlignment.Right,
+            TextTruncate = Enum.TextTruncate.AtEnd,
+        }),
+    })
+
 	local content = {
-		Layout = verticalLayout(Tokens.Space.MD),
+        Layout = verticalLayout(Tokens.Space.MD),
+
+        ScrollPadding = e("UIPadding", {
+            PaddingLeft = UDim.new(0, 3),
+            PaddingRight = UDim.new(0, 12),
+            PaddingTop = UDim.new(0, 3),
+            PaddingBottom = UDim.new(0, 8),
+        }),
 
 		Header = makeText("Heading", "NOCTELLE", palette.Text, 1),
 
@@ -266,6 +314,8 @@ local function PlaygroundApp()
 		Swatches = themeSwatches(selectedTheme, selectTheme),
 
 		SelectedTheme = makeText("Caption", "Selected: " .. selectedTheme, palette.Muted, 11),
+
+        RowPreview = rowPreview,
 	}
 
 	local scroll = e("ScrollingFrame", {
@@ -282,8 +332,9 @@ local function PlaygroundApp()
 		ScrollingDirection = Enum.ScrollingDirection.Y,
 		ElasticBehavior = Enum.ElasticBehavior.WhenScrollable,
 
-		ScrollBarThickness = 3,
-		ScrollBarImageColor3 = palette.Accent,
+		ScrollBarThickness = 4,
+        ScrollBarImageColor3 = palette.Accent,
+        VerticalScrollBarPosition = Enum.VerticalScrollBarPosition.Right,
 
 		Active = true,
 		ClipsDescendants = true,

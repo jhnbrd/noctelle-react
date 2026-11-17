@@ -21,10 +21,11 @@ function Card.Component(props: any)
 		}),
 
 		Stroke = e("UIStroke", {
-			Color = theme.Border,
-			Transparency = 0.75,
-			Thickness = 1,
-		}),
+            Color = theme.Accent,
+            Transparency = 0.45,
+            Thickness = 1,
+            ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+        }),
 
 		Padding = e("UIPadding", {
 			PaddingTop = UDim.new(0, Tokens.Space.MD),

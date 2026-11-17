@@ -21,10 +21,11 @@ function GlassPanel.Component(props: any)
 		}),
 
 		Stroke = e("UIStroke", {
-			Color = theme.Border,
-			Thickness = Tokens.Glass.BorderThickness,
-			Transparency = Tokens.Glass.BorderTransparency,
-		}),
+            Color = theme.Accent,
+            Thickness = Tokens.Glass.BorderThickness,
+            Transparency = 0.55,
+            ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+        }),
 
 		Padding = e("UIPadding", {
 			PaddingTop = UDim.new(0, Tokens.Space.LG),

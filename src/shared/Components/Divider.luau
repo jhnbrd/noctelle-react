@@ -18,7 +18,7 @@ function Divider.Component(props: any)
 		Name = props.Name or "Divider",
 		Size = props.Size or UDim2.new(1, 0, 0, 1),
 		LayoutOrder = props.LayoutOrder or 0,
-		BackgroundColor3 = theme.Border,
+		BackgroundColor3 = theme.Accent,
 		BackgroundTransparency = props.Transparency or 0.65,
 		BorderSizePixel = 0,
 	})
