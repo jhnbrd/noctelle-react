@@ -1,6 +1,7 @@
 --!strict
--- NOCTELLE React | Interactive Component Playground
--- Phase 1B | DEV-only visual and interaction testing
+-- NOCTELLE React | Adaptive Component Playground
+-- Phase 1C | Responsive without shrinking typography
+-- Development place only
 
 local Players = game:GetService("Players")
 local RS = game:GetService("ReplicatedStorage")
@@ -21,14 +22,11 @@ local Divider = require(Components.Divider)
 
 local Tokens = require(Foundation.Tokens)
 local Theme = require(Foundation.Theme)
+local Responsive = require(Foundation.Responsive)
 
 local e = React.createElement
 
 local Playground = {}
-
--- Calibration value from the existing NOCTELLE phone.
--- This is temporary, not the final responsive scaling system.
-local PREVIEW_SCALE = 0.8949152827
 
 local function makeText(variant, value, color, order)
 	return e(Text.Component, {
@@ -39,21 +37,51 @@ local function makeText(variant, value, color, order)
 	})
 end
 
+local function makeParagraph(value, color, order)
+	-- Wrapped body text that expands vertically as needed.
+	return e("TextLabel", {
+		Name = "WrappedBody",
+		LayoutOrder = order,
+
+		Size = UDim2.new(1, 0, 0, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
+
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+
+		Text = value,
+		Font = Tokens.Font.Regular,
+		TextSize = Tokens.Type.Body,
+		TextColor3 = color,
+
+		TextWrapped = true,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextYAlignment = Enum.TextYAlignment.Top,
+	})
+end
+
 local function verticalLayout(spacing)
 	return e("UIListLayout", {
 		SortOrder = Enum.SortOrder.LayoutOrder,
-		Padding = UDim.new(0, spacing),
+		FillDirection = Enum.FillDirection.Vertical,
 		HorizontalAlignment = Enum.HorizontalAlignment.Left,
+		Padding = UDim.new(0, spacing),
 	})
 end
 
 local function themeSwatches(selectedTheme, onSelect)
+	local target = Responsive.SwatchSize
+
 	local children = {
-		Layout = e("UIListLayout", {
-			FillDirection = Enum.FillDirection.Horizontal,
+		Grid = e("UIGridLayout", {
 			SortOrder = Enum.SortOrder.LayoutOrder,
-			Padding = UDim.new(0, 1),
-			HorizontalAlignment = Enum.HorizontalAlignment.Left,
+			FillDirection = Enum.FillDirection.Horizontal,
+			FillDirectionMaxCells = Responsive.SwatchColumns,
+
+			CellSize = UDim2.fromOffset(target, target),
+			CellPadding = UDim2.fromOffset(Responsive.SwatchGap, Responsive.SwatchGap),
+
+			HorizontalAlignment = Enum.HorizontalAlignment.Center,
 		}),
 	}
 
@@ -65,9 +93,10 @@ local function themeSwatches(selectedTheme, onSelect)
 			Name = name,
 			LayoutOrder = index,
 
-			Size = UDim2.fromOffset(50, 50),
+			Size = UDim2.fromOffset(target, target),
 
-			BackgroundTransparency = 1,
+			BackgroundColor3 = palette.Surface,
+			BackgroundTransparency = 0.25,
 			BorderSizePixel = 0,
 
 			Text = "",
@@ -78,18 +107,19 @@ local function themeSwatches(selectedTheme, onSelect)
 			end,
 		}, {
 			Corner = e("UICorner", {
-				CornerRadius = UDim.new(0, 8),
+				CornerRadius = UDim.new(0, Tokens.Radius.Control),
 			}),
 
 			Selection = e("UIStroke", {
 				Color = palette.Accent,
-				Thickness = 2,
-				Transparency = if selected then 0 else 1,
+				Thickness = if selected then 2 else 1,
+				Transparency = if selected then 0 else 0.8,
 			}),
 
 			Swatch = e("Frame", {
 				AnchorPoint = Vector2.new(0.5, 0.5),
 				Position = UDim2.fromScale(0.5, 0.5),
+
 				Size = UDim2.fromOffset(28, 28),
 
 				BackgroundColor3 = palette.Accent,
@@ -106,13 +136,13 @@ local function themeSwatches(selectedTheme, onSelect)
 		Name = "ThemeSwatches",
 		LayoutOrder = 10,
 
-		Size = UDim2.new(1, 0, 0, 50),
+		Size = UDim2.new(1, 0, 0, Responsive.GetSwatchHeight()),
+
 		BackgroundTransparency = 1,
 	}, children)
 end
 
 local function PlaygroundApp()
-	-- Hooks must run inside a React functional component.
 	local selectedTheme, setSelectedTheme = React.useState("Noctelle")
 
 	local clickCount, setClickCount = React.useState(0)
@@ -132,15 +162,18 @@ local function PlaygroundApp()
 		print("[PLAYGROUND THEME]", name)
 	end
 
+	local controlHeight = Responsive.GetControlHeight()
+	local buttonGap = Tokens.Space.SM
+
 	local buttons = {
-		Layout = verticalLayout(Tokens.Space.SM),
+		Layout = verticalLayout(buttonGap),
 
 		Primary = e(Button.Component, {
 			Name = "Primary",
 			Variant = "Primary",
 			Text = "Primary Action",
 			Theme = palette,
-			EffectiveScale = PREVIEW_SCALE,
+			EffectiveScale = 1,
 			LayoutOrder = 1,
 
 			OnActivated = function()
@@ -153,7 +186,7 @@ local function PlaygroundApp()
 			Variant = "Secondary",
 			Text = "Secondary Action",
 			Theme = palette,
-			EffectiveScale = PREVIEW_SCALE,
+			EffectiveScale = 1,
 			LayoutOrder = 2,
 
 			OnActivated = function()
@@ -166,7 +199,7 @@ local function PlaygroundApp()
 			Variant = "Ghost",
 			Text = "Ghost Action",
 			Theme = palette,
-			EffectiveScale = PREVIEW_SCALE,
+			EffectiveScale = 1,
 			LayoutOrder = 3,
 
 			OnActivated = function()
@@ -180,7 +213,7 @@ local function PlaygroundApp()
 			Text = "Disabled Action",
 			Theme = palette,
 			Disabled = true,
-			EffectiveScale = PREVIEW_SCALE,
+			EffectiveScale = 1,
 			LayoutOrder = 4,
 		}),
 	}
@@ -190,7 +223,7 @@ local function PlaygroundApp()
 
 		Header = makeText("Heading", "NOCTELLE", palette.Text, 1),
 
-		Subtitle = makeText("Caption", "Component Playground / Phase 1B", palette.Muted, 2),
+		Subtitle = makeText("Caption", "Component Playground / Phase 1C", palette.Muted, 2),
 
 		DividerTop = e(Divider.Component, {
 			Theme = palette,
@@ -199,13 +232,14 @@ local function PlaygroundApp()
 
 		Title = makeText("Title", "Music & Dance", palette.Text, 4),
 
-		Body = makeText("Body", "Choose an animation to begin dancing.", palette.Text, 5),
+		Body = makeParagraph("Choose an animation to begin dancing.", palette.Text, 5),
 
 		Buttons = e("Frame", {
 			Name = "Buttons",
 			LayoutOrder = 6,
 
-			Size = UDim2.new(1, 0, 0, 224),
+			Size = UDim2.new(1, 0, 0, controlHeight * 4 + buttonGap * 3),
+
 			BackgroundTransparency = 1,
 		}, buttons),
 
@@ -215,6 +249,7 @@ local function PlaygroundApp()
 			Name = "CardPreview",
 			Theme = palette,
 			LayoutOrder = 8,
+
 			Size = UDim2.new(1, 0, 0, 86),
 
 			Children = {
@@ -244,13 +279,14 @@ local function PlaygroundApp()
 		CanvasSize = UDim2.fromOffset(0, 0),
 		AutomaticCanvasSize = Enum.AutomaticSize.Y,
 
-		ScrollBarThickness = 3,
-		ScrollBarImageColor3 = palette.Accent,
-
 		ScrollingDirection = Enum.ScrollingDirection.Y,
 		ElasticBehavior = Enum.ElasticBehavior.WhenScrollable,
 
+		ScrollBarThickness = 3,
+		ScrollBarImageColor3 = palette.Accent,
+
 		Active = true,
+		ClipsDescendants = true,
 	}, content)
 
 	return e(GlassPanel.Component, {
@@ -260,11 +296,13 @@ local function PlaygroundApp()
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Position = UDim2.fromScale(0.5, 0.5),
 
-		Size = UDim2.fromOffset(340, 510),
+		-- Fill the safe area minus margins.
+		-- UISizeConstraint limits large desktop dimensions.
+		Size = UDim2.new(1, -Responsive.Margin * 2, 1, -Responsive.Margin * 2),
 
 		Children = {
-			UIScale = e("UIScale", {
-				Scale = PREVIEW_SCALE,
+			Constraint = e("UISizeConstraint", {
+				MaxSize = Vector2.new(Responsive.PanelWidth, Responsive.PanelHeight),
 			}),
 
 			Scroll = scroll,
@@ -275,7 +313,7 @@ end
 function Playground.Mount(playerGui)
 	assert(game.PlaceId == 119625856408570, "Component playground is DEV-only")
 
-	assert(Players.LocalPlayer ~= nil, "Mount must run on client")
+	assert(Players.LocalPlayer ~= nil, "Mount must run on the client")
 
 	local previous = playerGui:FindFirstChild("NoctelleComponentPlayground")
 
@@ -288,6 +326,7 @@ function Playground.Mount(playerGui)
 
 	gui.ResetOnSpawn = false
 	gui.IgnoreGuiInset = false
+	gui.ScreenInsets = Enum.ScreenInsets.CoreUISafeInsets
 	gui.DisplayOrder = 1000
 	gui.Parent = playerGui
 
@@ -295,7 +334,7 @@ function Playground.Mount(playerGui)
 
 	root:render(e(PlaygroundApp))
 
-	print("[PLAYGROUND] Interactive React preview mounted")
+	print("[PLAYGROUND] Adaptive React preview mounted")
 
 	return function()
 		root:unmount()

@@ -41,9 +41,9 @@ Tokens.Control = table.freeze({
 })
 
 Tokens.Glass = table.freeze({
-	SurfaceTransparency = 0.12,
+	SurfaceTransparency = 0.04,
 	BorderThickness = 1,
-	BorderTransparency = 0.65,
+	BorderTransparency = 0.55,
 })
 
 -- The rendered size depends on ancestor UIScale.
